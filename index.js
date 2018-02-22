@@ -45,7 +45,7 @@ app.get('/session/:id', function (req, res) {
 	var tokenOptions = {};
 	// tokenOptions.role = "publisher";
 	// tokenOptions.data = "username=bob";
-	tokenOptions.expireTime = 1521760060; //Thursday, March 22, 2018 11:07:40 PM UNIX TIME SECONDS
+	tokenOptions.expireTime = 1521760060; //TODO: Thursday, March 22, 2018 11:07:40 PM UNIX TIME SECONDS
 
 	var sessionId = req.params.id,
 		// generate a fresh token for this client
@@ -58,9 +58,11 @@ app.get('/session/:id', function (req, res) {
 	});
 });
 
+
 // Start the express app
 function init() {
-  app.listen(process.env.PORT, function() {
-    console.log('You\'re app is now ready at http://localhost:' + process.env.PORT);
+	//TODO: Currently set for https://dev2.notarycam.com which is on port 4007.
+	app.listen(process.env.PORT, function() {
+    console.log('You\'re app is now ready at port:' + process.env.PORT);
   });
 }
