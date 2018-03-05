@@ -14,7 +14,6 @@ session.on({
 		// clients)
 
 		//creates the publisher video
-		console.log("Pubstream", event)
 		var publisherProperties = {width: 400, height: 300, name: "pub-stream", insertMode: "replace"};
 		var publisher = OT.initPublisher('publisher', publisherProperties);
 		session.publish(publisher);
@@ -34,28 +33,30 @@ session.on({
 		document.getElementById('subscribers').appendChild(subContainer);
 		var subProperties = {width: 400, height: 300, name: "sub-stream-"+event.stream.streamId, insertMode: "replace"};
 
-		//creates button
-		var subButton = document.createElement('button');
-		subButton.innerHTML = "Take screenshot for: " + event.stream.streamId;
-		subButton.id = 'stream-' + event.stream.streamId;
+		if(role === 'publisher'){
+			//creates button
+			var subButton = document.createElement('button');
+			subButton.innerHTML = "Take screenshot for: " + event.stream.streamId;
+			subButton.id = 'stream-' + event.stream.streamId;
 
-		//button that takes screenshot
-		subButton.onclick = function (){
-			session.signal({
-					type: "screenshot",
-					data: event.stream.streamId
-				},
-				function (error) {
-					if (error) {
-						console.log("signal error: " + error.message);
-					} else {
-						console.log("signal sent");
+			//button that takes screenshot
+			subButton.onclick = function (){
+				session.signal({
+						type: "screenshot",
+						data: event.stream.streamId
+					},
+					function (error) {
+						if (error) {
+							console.log("signal error: " + error.message);
+						} else {
+							console.log("signal sent");
+						}
 					}
-				}
-			);
-		};
-		//attatches the sub button to the div
-		document.getElementById('subscribers').appendChild(subButton);
+				);
+			};
+			//attatches the sub button to the div
+			document.getElementById('subscribers').appendChild(subButton);
+		}
 
 		// Subscribe to the stream that caused this event, put it inside the container we just made
 		session.subscribe(event.stream, subContainer, subProperties);
@@ -64,8 +65,6 @@ session.on({
 	signal: function (event) {
 		switch(event.type){
 			case 'signal:screenshot': {
-				console.log("Event", event)
-				console.log("Streams", streams)
 				//finds the subscriber for the stream
 				var subscriber = session.getSubscribersForStream(streams.find( stream => stream.id === event.data ))[0];
 				//generates screenshot based off of the subscriber
@@ -78,6 +77,22 @@ session.on({
 			}
 
 		}
+	},
+
+	connectionDestroyed: function (event) {
+		streams.forEach(function (stream) {
+			if(document.getElementById('stream-id-' + stream.streamId) === null && document.getElementById('stream-' + stream.streamId) !== null){
+				document.getElementById('stream-' + stream.streamId).remove();
+			}
+		})
+	},
+
+	sessionDisconnected: function (event) {
+		streams.forEach(function (stream) {
+			if(document.getElementById('stream-id-' + stream.streamId) === null && document.getElementById('stream-' + stream.streamId) !== null){
+				document.getElementById('stream-' + stream.streamId).remove();
+			}
+		})
 	}
 
 });
