@@ -62,7 +62,8 @@ app.get('/session/:id', function (req, res) {
 // Start the express app
 function init() {
 	//TODO: Currently set for https://dev2.notarycam.com which is on port 4007.
-	app.listen(process.env.PORT, function() {
-    console.log('You\'re app is now ready at port:' + process.env.PORT);
+	var port = process.env.PORT || 3000;
+	app.listen(port, function() {
+    console.log('You\'re app is now ready at port:' + port);
   });
 }
